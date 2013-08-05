@@ -5,7 +5,7 @@ Vagrant.configure("2") do |config|
   # All Vagrant configuration is done here. The most common configuration
   # options are documented and commented below. For a complete reference,
   # please see the online documentation at vagrantup.com.
-  config.vm.hostname = "local.expresstest.monsoon.com"
+  config.vm.hostname = "local.project.monsoon.com"
 
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "opscode-centos-6.3"
@@ -37,19 +37,21 @@ Vagrant.configure("2") do |config|
 
   # Forward a port from the guest to the host, which allows for outside
   # computers to access the VM, whereas host only networking does not.
-  config.vm.network :forwarded_port, guest: 80, host: 8079
+  config.vm.network :forwarded_port, guest: 80, host: 4567
   # For debugging Node server
   config.vm.network :forwarded_port, guest: 8081, host: 4568
 
   # Share an additional folder to the guest VM. The first argument is
   # an identifier, the second is the path on the guest to mount the
   # folder, and the third is the path on the host to the actual folder
-  config.vm.synced_folder ".", "/project"
+  config.vm.synced_folder ".", "/var/www/project"
+  config.vm.synced_folder "public", "/var/www/project/public"
+  config.vm.synced_folder "private", "/var/www/project/private"
 
   # Enable provisioning with chef solo, specifying a cookbooks path, roles
   # path, and data_bags path (all relative to this Vagrantfile), and adding
   # some recipes and/or roles.
-  app_root = "/project"
+  app_root = "/var/www/project"
 
   config.vm.provision :chef_solo do |chef|
     # You may also specify custom JSON attributes:
@@ -66,12 +68,13 @@ Vagrant.configure("2") do |config|
     }
 
     chef.run_list = [
-      "recipe[express-cookbook::default]"
+      "recipe[minitest-handler::default]",
+      "recipe[node-server::default]"
     ]
   end
 
-  # config.vm.provision :shell do |shell|
-  #   shell.inline = "sudo mount -t vboxsf -o uid=`id -u apache`,gid=`getent group www-data | cut -d: -f3` /var/www/project/app /var/www/project/app"
-  #   shell.inline = "sudo mount -t vboxsf -o uid=`id -u node`,gid=`getent group www-data | cut -d: -f3` /var/www/project/server /var/www/project/server"
-  # end
+  config.vm.provision :shell do |shell|
+    shell.inline = "sudo mount -t vboxsf -o uid=`id -u apache`,gid=`getent group www-data | cut -d: -f3` /var/www/project/app /var/www/project/app"
+    shell.inline = "sudo mount -t vboxsf -o uid=`id -u node`,gid=`getent group www-data | cut -d: -f3` /var/www/project/server /var/www/project/server"
+  end
 end
