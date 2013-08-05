@@ -5,7 +5,7 @@ Vagrant.configure("2") do |config|
   # All Vagrant configuration is done here. The most common configuration
   # options are documented and commented below. For a complete reference,
   # please see the online documentation at vagrantup.com.
-  config.vm.hostname = "local.express_test.monsoon.com"
+  config.vm.hostname = "local.expresstest.monsoon.com"
 
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "opscode-centos-6.3"
@@ -37,7 +37,7 @@ Vagrant.configure("2") do |config|
 
   # Forward a port from the guest to the host, which allows for outside
   # computers to access the VM, whereas host only networking does not.
-  config.vm.network :forwarded_port, guest: 80, host: 4567
+  config.vm.network :forwarded_port, guest: 80, host: 8079
   # For debugging Node server
   config.vm.network :forwarded_port, guest: 8081, host: 4568
 
