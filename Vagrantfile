@@ -37,7 +37,7 @@ Vagrant.configure("2") do |config|
 
   # Forward a port from the guest to the host, which allows for outside
   # computers to access the VM, whereas host only networking does not.
-  config.vm.network :forwarded_port, guest: 80, host: 4567
+  config.vm.network :forwarded_port, guest: 80, host: 8080
   # For debugging Node server
   config.vm.network :forwarded_port, guest: 8081, host: 4568
 
@@ -45,8 +45,6 @@ Vagrant.configure("2") do |config|
   # an identifier, the second is the path on the guest to mount the
   # folder, and the third is the path on the host to the actual folder
   config.vm.synced_folder ".", "/var/www/project"
-  config.vm.synced_folder "public", "/var/www/project/public"
-  config.vm.synced_folder "private", "/var/www/project/private"
 
   # Enable provisioning with chef solo, specifying a cookbooks path, roles
   # path, and data_bags path (all relative to this Vagrantfile), and adding
@@ -58,7 +56,7 @@ Vagrant.configure("2") do |config|
     chef.json = {
       :app_root => app_root,
       :app => {
-        :port => 8079,
+        :port => 8080,
         :environment => "development",
         :domain => config.vm.hostname
       },
@@ -69,7 +67,7 @@ Vagrant.configure("2") do |config|
 
     chef.run_list = [
       "recipe[minitest-handler::default]",
-      "recipe[node-server::default]"
+      "recipe[express-cookbook::default]"
     ]
   end
 
