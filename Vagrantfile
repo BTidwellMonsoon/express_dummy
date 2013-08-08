@@ -3,11 +3,10 @@
 
 Vagrant.configure("2") do |config|
   # BEGIN custom configuration
+  project_name = "project"
   project_config = {
-    :info => {
-      :name => "project"
-    },
     :network => {
+      :hostname => "local.#{project_name}.monsoon.com",
       :local => {
         :port => 4567,
         :debug_port => 4568
@@ -16,21 +15,23 @@ Vagrant.configure("2") do |config|
         :node => 8079
       }
     },
-    :repo => {
-      :dir_name => 'project'
+    :paths => {
+      :repo => "/var/www/#{project_name}",
+      :private => "/var/www/#{project_name}"
+      :public => "/var/www/#{project_name}/public",
     }
   }
+  # Override if entry point of Node.js server differs from Express default
+  # project_config[:paths][:main_js] => "#{project_config[:paths][:repo]}/app.js"
 
   # END custom configuration
   # Changing variables beyond this point may break things.
   #justsayin
 
-  app_root = "/var/www/#{project_config[:repo][:dir_name]}"
-
   # All Vagrant configuration is done here. The most common configuration
   # options are documented and commented below. For a complete reference,
   # please see the online documentation at vagrantup.com.
-  config.vm.hostname = "local.#{project_config[:info][:name]}.monsoon.com"
+  config.vm.hostname =
 
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "opscode-centos-6.3"
@@ -69,7 +70,7 @@ Vagrant.configure("2") do |config|
   # Share an additional folder to the guest VM. The first argument is
   # an identifier, the second is the path on the guest to mount the
   # folder, and the third is the path on the host to the actual folder
-  config.vm.synced_folder ".", app_root
+  config.vm.synced_folder ".", project_config[:paths][:repo]
 
   # Enable provisioning with chef solo, specifying a cookbooks path, roles
   # path, and data_bags path (all relative to this Vagrantfile), and adding
@@ -80,9 +81,13 @@ Vagrant.configure("2") do |config|
     chef.json = {
       :app_root => app_root,
       :app => {
-        :port => project_config[:network][:vm][:node],
         :environment => "development",
-        :domain => config.vm.hostname
+        :port => project_config[:network][:vm][:node],
+        :paths => {
+          :root => project_config[:paths][:repo],
+          :public => project_config[:paths][:public],
+          :private => project_config[:paths][:private]
+        }
       },
       :nodejs => {
         :version => "0.8.20"
