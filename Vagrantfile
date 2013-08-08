@@ -10,19 +10,18 @@ Vagrant.configure("2") do |config|
       :local => {
         :port => 4567,
         :debug_port => 4568
-      },
-      :vm => {
-        :node => 8079
       }
+      # :vm => {
+      #   :node => 8079
+      # }
     },
-    :paths => {
-      :repo => "/var/www/#{project_name}",
-      :private => "/var/www/#{project_name}"
-      :public => "/var/www/#{project_name}/public",
-    }
+    # Project root must have trailing slash
+    :root => "/var/www/#{project_name}/"
   }
   # Override if entry point of Node.js server differs from Express default
-  # project_config[:paths][:main_js] => "#{project_config[:paths][:repo]}/app.js"
+  # project_config[:paths][:private] = "",
+  # project_config[:paths][:public] = "public"
+  # project_config[:paths][:main_js] = "app.js"
 
   # END custom configuration
   # Changing variables beyond this point may break things.
@@ -70,7 +69,7 @@ Vagrant.configure("2") do |config|
   # Share an additional folder to the guest VM. The first argument is
   # an identifier, the second is the path on the guest to mount the
   # folder, and the third is the path on the host to the actual folder
-  config.vm.synced_folder ".", project_config[:paths][:repo]
+  config.vm.synced_folder ".", project_config[:root]
 
   # Enable provisioning with chef solo, specifying a cookbooks path, roles
   # path, and data_bags path (all relative to this Vagrantfile), and adding
@@ -79,18 +78,11 @@ Vagrant.configure("2") do |config|
   config.vm.provision :chef_solo do |chef|
     # You may also specify custom JSON attributes:
     chef.json = {
-      :app_root => app_root,
-      :app => {
-        :environment => "development",
-        :port => project_config[:network][:vm][:node],
-        :paths => {
-          :root => project_config[:paths][:repo],
-          :public => project_config[:paths][:public],
-          :private => project_config[:paths][:private]
-        }
-      },
-      :nodejs => {
-        :version => "0.8.20"
+      :environment => "development",
+      :node_server => {
+        # :name => project_name,
+        # :port => project_config[:network][:vm][:node],
+        :root => project_config[:root]
       }
     }
 

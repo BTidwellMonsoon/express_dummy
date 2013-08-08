@@ -1,4 +1,4 @@
-cookbook 'express-cookbook', :git => 'git@github.com:jkatsnelson/express-cookbook.git', :ref => 'master'
+cookbook 'express-cookbook', :git => 'git@github.com:BTidwellMonsoon/express-cookbook.git', :ref => 'master'
 cookbook 'nodejs', :locked_version => '1.1.2'
 cookbook 'build-essential', :locked_version => '1.4.0'
 cookbook 'apt', :locked_version => '1.9.2'
