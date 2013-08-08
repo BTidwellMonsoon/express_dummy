@@ -2,10 +2,35 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
+  # BEGIN custom configuration
+  project_config = {
+    :info => {
+      :name => "project"
+    },
+    :network => {
+      :local => {
+        :port => 4567,
+        :debug_port => 4568
+      },
+      :vm => {
+        :node => 8079
+      }
+    },
+    :repo => {
+      :dir_name => 'project'
+    }
+  }
+
+  # END custom configuration
+  # Changing variables beyond this point may break things.
+  #justsayin
+
+  app_root = "/var/www/#{project_config[:repo][:dir_name]}"
+
   # All Vagrant configuration is done here. The most common configuration
   # options are documented and commented below. For a complete reference,
   # please see the online documentation at vagrantup.com.
-  config.vm.hostname = "local.project.monsoon.com"
+  config.vm.hostname = "local.#{project_config[:info][:name]}.monsoon.com"
 
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "opscode-centos-6.3"
@@ -37,26 +62,25 @@ Vagrant.configure("2") do |config|
 
   # Forward a port from the guest to the host, which allows for outside
   # computers to access the VM, whereas host only networking does not.
-  config.vm.network :forwarded_port, guest: 80, host: 4567
+  config.vm.network :forwarded_port, guest: 80, host: project_config[:network][:local][:port]
   # For debugging Node server
-  config.vm.network :forwarded_port, guest: 8081, host: 4568
+  config.vm.network :forwarded_port, guest: 8081, host: project_config[:network][:local][:debug_port]
 
   # Share an additional folder to the guest VM. The first argument is
   # an identifier, the second is the path on the guest to mount the
   # folder, and the third is the path on the host to the actual folder
-  config.vm.synced_folder ".", "/var/www/project"
+  config.vm.synced_folder ".", app_root
 
   # Enable provisioning with chef solo, specifying a cookbooks path, roles
   # path, and data_bags path (all relative to this Vagrantfile), and adding
   # some recipes and/or roles.
-  app_root = "/var/www/project"
 
   config.vm.provision :chef_solo do |chef|
     # You may also specify custom JSON attributes:
     chef.json = {
       :app_root => app_root,
       :app => {
-        :port => 8079,
+        :port => project_config[:network][:vm][:node],
         :environment => "development",
         :domain => config.vm.hostname
       },
