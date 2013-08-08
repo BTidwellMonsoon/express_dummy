@@ -37,7 +37,7 @@ Vagrant.configure("2") do |config|
 
   # Forward a port from the guest to the host, which allows for outside
   # computers to access the VM, whereas host only networking does not.
-  config.vm.network :forwarded_port, guest: 80, host: 8080
+  config.vm.network :forwarded_port, guest: 80, host: 4567
   # For debugging Node server
   config.vm.network :forwarded_port, guest: 8081, host: 4568
 
@@ -56,7 +56,7 @@ Vagrant.configure("2") do |config|
     chef.json = {
       :app_root => app_root,
       :app => {
-        :port => 8080,
+        :port => 8079,
         :environment => "development",
         :domain => config.vm.hostname
       },
